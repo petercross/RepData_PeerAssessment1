@@ -45,13 +45,13 @@ step.mean
 ## What is the average daily activity pattern?
 
 Determine the Hourly means across the days, and plot the line graph
-```{r}
+```{r,echo=TRUE}
 hourly <- aggregate(steps ~ interval,data=activity,FUN=mean,na.rm=TRUE)
 plot(hourly$steps ~ hourly$interval,type="l",xlab="Time of Day",ylab="Steps",main="Average Steps by Hour of Day")
 ```
 
 determine the period of maximum mean steps
-```{r}
+```{r,echo=TRUE}
 max.hour <- subset(hourly,hourly$steps == max(hourly$steps))
 max.hour$interval
 ```
@@ -59,37 +59,37 @@ max.hour$interval
 ## Imputing missing values
 
 Determine the count of NA readings
-```{r}
+```{r,echo=TRUE}
 sum(is.na(activity$steps))
 ```
 
 Determine the median steps for each interval
-```{r}
+```{r,echo=TRUE}
 median.interval <- aggregate(steps ~ interval,data=activity,FUN=median,na.rm=TRUE)
 ```
 
 Append the median step level for each interval
-```{r}
+```{r,echo=TRUE}
 activity2 <- merge(activity,median.interval,by="interval",all.x=TRUE)
 ```
 
 Determine positions of NA values in original dataset
-```{r}
+```{r,echo=TRUE}
 na.count <- is.na(activity2$steps.x)
 ```
 
 replace any NA values in origianl data with median values for that interval
-```{r}
+```{r,echo=TRUE}
 activity2$steps.x[na.count] <- activity2$steps.y[na.count]
 ```
 
 remove extraneous columns
-```{r}
+```{r,echo=TRUE}
 activity2 <- select(activity2,steps = steps.x,date,interval)
 ```
 
 determine the new Histogram, daily values, and median and means for comparison
-```{r}
+```{r,echo=TRUE}
 daily2 <- aggregate(steps ~ date, data=activity2,FUN=sum, na.rm=TRUE)
 hist(daily2$steps,breaks=25)
 rug(daily2$steps)
@@ -100,7 +100,7 @@ step.median2
 ```
 
 Compare the mean and median differences between datasets with NA values removed and NA values replaced.
-```{r}
+```{r,echo=TRUE}
 mean.diff <- step.mean - step.mean2
 median.diff <- step.median - step.median2
 mean.diff
@@ -110,13 +110,13 @@ median.diff
 ## Are there differences in activity patterns between weekdays and weekends?
 
 Append a factor column for weekend/weekday
-```{r}
+```{r,echo=TRUE}
 activity2$date <- as.POSIXct(activity2$date,format='%Y-%m-%d')
 activity2 <- mutate(activity2,"day_type" = as.factor(ifelse(weekdays(date) == "Saturday" | weekdays(date) == "Sunday","weekend","weekday")))
 ```
 
 find means for each of the day types by interval and graph them
-```{r}
+```{r,echo=TRUE}
 #par(mfcol=c(2,1))
 act2_mean <- aggregate(activity2$steps,by=list(activity2$interval,activity2$day_type),FUN=mean)
 names(act2_mean) <- c("interval","day_type","steps")
